@@ -1,14 +1,31 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View, FlatList, Modal } from 'react-native';
 import Reacts, { useState } from 'react';
 
 export default function App() {
 
   const [textValue, setTextValue] = useState('')
+  const [itemslist, setItemsList] = useState([])
+  const [itemSelected, setItemSelected] = useState ({})
+  const [modalVisible, setModalVisible] = useState (false)
 
-  const [itemslist, setitemslist] = useState([])
+  const onHandlechangeItem = text => setTextValue(text)
 
-  const onHandlechangeItem = (text) => setTextValue()
+  const addItem = () => {
+    setItemsList(prevState => [
+      ...prevState,
+      { id: Math.random(), value: textValue}, 
+    ])
+  }
+
+  const renderListItem = ({item}) => (
+    <View style={styles.TextContainer}>
+      <Text style={styles.Text}>{item.value}</Text>
+    </View>
+  )
+
+  const onHandleDelete = () => {}
+  const onHandleModal = () => {}
 
   return (
     <View style={styles.container}>
@@ -16,23 +33,44 @@ export default function App() {
         <TextInput 
             placeholder='Item de la Lista'
             style={styles.Input}
+            value={textValue}
+            onChangeText={onHandlechangeItem}
         />
-        <Button title='ADD' />
+        <Button title='ADD' onPress={addItem} />
       </View>
       <View style={styles.listContainer}>
+        <FlatList 
+          data={itemslist}
+          renderItem={renderListItem}
+          keyExtractor={item => item.id}
+        />
+      </View>
+      <Modal 
+      visible={modalVisible} animationType='fade'>
+        <View style={styles.modalTitle}>
+          <Text>Mi Modal</Text>
+        </View>
+        <View style={styles.modalMessage}>
+          <Text>Estas Seguro de Eliminar??</Text>
+        </View>
+        <View style={styles.modalButton}>
+          <Button title='Configurar' onPress={onHandleDelete}/>
+        </View>
+      </Modal>
+      {/* <View style={styles.listContainer}>
         {itemslist.map(item => (
           <View style={styles.TextContainer}>
-            <Text style={styles.Text}> item 1 </Text>
+            <Text style={styles.Text}>{item.value}</Text>
           </View>
         ))}
-      </View>
+      </View> */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: '759cff',
     padding: 30,
   },
   Input: {
@@ -69,6 +107,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     alignItems: "center",
   },
+  modalTitle:{
+    backgroundColor: "#ccc",
+    color: "#fff",
+    fontSize: 18,
+  },
+  modalMessage:{
+    marginBottom: 15,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalButton:{
+    marginTop: 15,
+  }
 });
 
 
