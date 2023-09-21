@@ -1,34 +1,51 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, TextInput, View, FlatList, Modal } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View, FlatList, Modal, TouchableOpacity,} from 'react-native';
 import Reacts, { useState } from 'react';
 
 export default function App() {
 
   const [textValue, setTextValue] = useState('')
   const [itemslist, setItemsList] = useState([])
-  const [itemSelected, setItemSelected] = useState ({})
+  const [itemSelected, setItemSelected] = useState ()
   const [modalVisible, setModalVisible] = useState (false)
 
   const onHandlechangeItem = text => setTextValue(text)
 
   const addItem = () => {
+    if (textValue === '') {
+      return
+    }
     setItemsList(prevState => [
       ...prevState,
       { id: Math.random(), value: textValue}, 
     ])
   }
 
-  const renderListItem = ({item}) => (
-    <View style={styles.TextContainer}>
+  const renderListItem = ({item, index}) => (
+    <TouchableOpacity style={styles.TextContainer} onPress={() => onHandleModal(index) }>
       <Text style={styles.Text}>{item.value}</Text>
-    </View>
+    </TouchableOpacity>
   )
 
-  const onHandleDelete = () => {}
-  const onHandleModal = () => {}
+  const onHandleDelete = () => {
+    console.log(itemSelected)
+    let arr = itemslist
+    arr.splice(itemSelected, 1)
+    setItemsList(arr)
+    setModalVisible(false)
+  }
+
+  const onHandleModal = index => {
+    console.log (index)
+    setModalVisible (true)
+    setItemSelected(index)
+  }
 
   return (
     <View style={styles.container}>
+      <View style={styles.tituloContainer} >
+        <Text style={styles.titulo}>Shop List</Text>
+      </View>
       <View style={styles.InputComtainer}>
         <TextInput 
             placeholder='Item de la Lista'
@@ -36,7 +53,7 @@ export default function App() {
             value={textValue}
             onChangeText={onHandlechangeItem}
         />
-        <Button title='ADD' onPress={addItem} />
+        <Button title='+ ADD' color={"#000"} onPress={addItem} />
       </View>
       <View style={styles.listContainer}>
         <FlatList 
@@ -54,7 +71,7 @@ export default function App() {
           <Text>Estas Seguro de Eliminar??</Text>
         </View>
         <View style={styles.modalButton}>
-          <Button title='Configurar' onPress={onHandleDelete}/>
+          <Button title='Confirmarr' onPress={onHandleDelete}/>
         </View>
       </Modal>
       {/* <View style={styles.listContainer}>
@@ -70,12 +87,11 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '759cff',
+    backgroundColor: 'brown',
     padding: 30,
+    height: '100%',
   },
   Input: {
-    borderBottomColor: "black",
-    borderBottomWidth: 1,
     width: 200,
     fontSize: 24,
   },
@@ -83,42 +99,55 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    backgroundColor: "white",
+    borderRadius: 8,
+    padding: 6,
   },
   listContainer:{
     justifyContent: "center",
     alignItems: "center",
-    borderColor: "black",
-    borderWidth: 2,
+    marginBottom: 50,
     marginTop: 20,
     padding: 20,
-    backgroundColor: "blue",
+    width: "100%",
+    
+  
   },
   Text:{
     fontSize: 30,
     fontWeight: "bold",
     color: "black",
+    width: "100%",
   },
   TextContainer:{
-    borderColor: "black",
-    borderWidth: 2,
+    borderRadius: 12,
     marginVertical: 10,
-    padding: 10,
+    padding: 20,
     width: "100%",
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "white",
     alignItems: "center",
   },
   modalTitle:{
     backgroundColor: "#ccc",
     color: "#fff",
-    fontSize: 18,
+    fontSize: 28,
   },
   modalMessage:{
     marginBottom: 15,
     justifyContent: "center",
     alignItems: "center",
+    fontSize: 40,
   },
   modalButton:{
     marginTop: 15,
+    
+  },
+  titulo:{
+    fontSize: 36,
+  },
+  tituloContainer:{
+    alignItems: "center",
+    width: "100%",
   }
 });
 
